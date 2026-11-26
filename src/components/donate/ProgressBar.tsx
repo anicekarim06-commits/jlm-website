@@ -1,9 +1,12 @@
 export function ProgressBar({
   receivedMAD,
   goalMAD,
+  label,
 }: {
   receivedMAD: number;
   goalMAD: number;
+  /** Accessible name, e.g. "Progression de la collecte" (WCAG 4.1.2). */
+  label: string;
 }) {
   const percent =
     goalMAD > 0 ? Math.min(100, Math.round((receivedMAD / goalMAD) * 100)) : 0;
@@ -15,6 +18,8 @@ export function ProgressBar({
         aria-valuenow={percent}
         aria-valuemin={0}
         aria-valuemax={100}
+        aria-label={label}
+        aria-valuetext={`${receivedMAD} / ${goalMAD} MAD (${percent}%)`}
         className="h-3 w-full overflow-hidden rounded-full bg-black/10"
       >
         {/* `inline-size` + logical `inset-inline-start` (not left/width) so the

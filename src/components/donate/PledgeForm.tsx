@@ -88,12 +88,15 @@ export function PledgeForm({
       }
       trackEvent("pledge_submitted", { campaignSlug });
       if (data.checkoutUrl) {
-        // Full browser redirect to Stripe-hosted Checkout (test mode).
+        // Full browser redirect to Stripe-hosted Checkout.
         window.location.href = data.checkoutUrl;
         return;
       }
+      // No-database mode returns no reference for bank/in-kind gifts.
       router.push(
-        `/donate/thanks?ref=${encodeURIComponent(data.reference)}&campaign=${campaignSlug}`,
+        data.reference
+          ? `/donate/thanks?ref=${encodeURIComponent(data.reference)}&campaign=${campaignSlug}`
+          : `/donate/thanks?method=${data.method === "in-kind" ? "in-kind" : "bank"}&campaign=${campaignSlug}`,
       );
     } catch {
       setError("Network error");
@@ -165,7 +168,9 @@ export function PledgeForm({
                 </label>
               </div>
               {paymentMethod === "card" && (
-                <p className="text-muted mt-1 text-xs">{t("cardTestNotice")}</p>
+                <p className="text-muted mt-1 text-xs">
+                  {t("cardRedirectNotice")}
+                </p>
               )}
             </div>
           )}

@@ -12,3 +12,7 @@ show JLM activities — replace with real JLM photography before launch
 | haouz-atlas.jpg     | Timothy A. Gonsalves | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Arhbalou_High_Atlas_Al_Haouz_Morocco_Oct25_A7CR_08381.jpg                     |
 | imlil.jpg           | Mounir Neddi         | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Imlil_village,_High_Atlas_Mountains.jpg                                       |
 | craft-ceramics.jpg  | AdilElouarti         | CC0          | https://commons.wikimedia.org/wiki/File:Intricately_decorated_Moroccan_ceramics_and_Zellige_pottery_in_Fes_Medina.jpg |
+
+## JLM logos (`/images/brand`, `/images/projects`, `/images/prototypes`, `src/app/icon.png`)
+
+JLM's own logo, the 9 project logos, the MIPAD prototype photo and the Eden AI render, taken on 2026-11-26 from JLM's annual-report site (https://jlmensamcportfolio.netlify.app/). They belong to the association; resized to WebP for the performance budget. No people are shown. Replace them with the board's master files when supplied (docs/OPEN_QUESTIONS.md #4).

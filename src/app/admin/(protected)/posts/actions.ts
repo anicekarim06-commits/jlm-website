@@ -17,6 +17,16 @@ import {
   formStringArray,
 } from "@/lib/admin/form-data";
 
+/**
+ * Refreshes the public News list, every post page and the RSS feeds in all
+ * locales, so a publish shows on the live site immediately (J6) rather
+ * than after the 60 s ISR floor.
+ */
+function revalidatePostViews() {
+  revalidatePath("/admin/posts");
+  revalidatePath("/[locale]/news", "layout");
+}
+
 function readPostFields(data: FormData) {
   const body = formLocalized(data, "body");
   return {
@@ -64,7 +74,7 @@ export async function createPost(
   }
 
   await db.collection("posts").doc(fields.slug).set(parsed.data);
-  revalidatePath("/admin/posts");
+  revalidatePostViews();
   redirect("/admin/posts");
 }
 
@@ -93,7 +103,7 @@ export async function updatePost(
   }
 
   await db.collection("posts").doc(slug).set(parsed.data);
-  revalidatePath("/admin/posts");
+  revalidatePostViews();
   redirect("/admin/posts");
 }
 
@@ -103,11 +113,11 @@ export async function setPostPublished(slug: string, published: boolean) {
     .collection("posts")
     .doc(slug)
     .update({ published, updatedBy: session.uid, updatedAt: new Date() });
-  revalidatePath("/admin/posts");
+  revalidatePostViews();
 }
 
 export async function deletePost(slug: string) {
   await requireEditorOrAdmin();
   await getAdminDb().collection("posts").doc(slug).delete();
-  revalidatePath("/admin/posts");
+  revalidatePostViews();
 }

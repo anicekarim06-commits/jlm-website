@@ -2,21 +2,29 @@
   {
     "slug": "ramadan-2027",
     "kind": "ramadan",
-    "title": { "fr": "Paniers alimentaires Ramadan 2027" },
+    "title": {
+      "fr": "Paniers alimentaires Ramadan 2027 (démonstration)",
+      "ar": "سلال غذائية رمضان 2027 (عرض توضيحي)",
+      "en": "Ramadan 2027 food baskets (demo)"
+    },
     "summary": {
-      "fr": "TODO(board): résumé et objectif à confirmer avant publication."
+      "fr": "Aidez-nous à préparer des paniers alimentaires pour des familles pendant le Ramadan 2027.",
+      "ar": "ساعدونا على تحضير سلال غذائية لفائدة أسر خلال رمضان 2027.",
+      "en": "Help us prepare food baskets for families during Ramadan 2027."
     },
     "story": {
-      "fr": "L'an dernier, l'action AZUL a permis de distribuer 76 paniers alimentaires, pour plus de 22 000 DH remis à des familles. TODO(board): objectif et détail du panier de cette année à confirmer avant publication."
+      "fr": "L'an dernier, l'action AZUL a permis de distribuer 76 paniers alimentaires, pour plus de 22 000 DH remis à des familles. Cette année, nous voulons aller plus loin. (Campagne de démonstration : objectif et dates illustratifs, en attente de validation par le bureau.)",
+      "ar": "في السنة الماضية، مكّنت عملية AZUL من توزيع 76 سلة غذائية، بما يفوق 22 000 درهم لفائدة الأسر. هذه السنة نريد أن نذهب أبعد. (حملة توضيحية: الهدف والتواريخ للتوضيح فقط، في انتظار مصادقة المكتب.)",
+      "en": "Last year, the AZUL action distributed 76 food baskets, more than 22,000 DH given to families. This year we want to go further. (Demo campaign: goal and dates are illustrative, pending board approval.)"
     },
-    "goalMAD": 1,
+    "goalMAD": 25000,
     "receivedMAD": 0,
-    "startsAt": "2027-02-01T00:00:00.000Z",
-    "endsAt": "2027-03-01T00:00:00.000Z",
-    "featured": false,
+    "startsAt": "2026-11-26T00:00:00.000Z",
+    "endsAt": "2027-03-31T23:59:59.000Z",
+    "featured": true,
     "breakdown": [],
     "inKindAccepted": true,
-    "published": false
+    "published": true
   },
   {
     "slug": "adha-2027",

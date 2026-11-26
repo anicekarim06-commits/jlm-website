@@ -9,6 +9,11 @@ import { sendEmail } from "@/lib/email/send";
 import { getPublicSettings } from "@/lib/content/settings";
 import { toMillis } from "@/lib/utils/firestore-date";
 import { getStripeClient, isCardPaymentsEnabled } from "@/lib/payments/stripe";
+import { hasDatabase } from "@/lib/firebase/mode";
+import { getCampaign } from "@/lib/content/campaigns";
+import { isEmailConfigured } from "@/lib/email/send";
+import type { PledgeInput } from "@/lib/validation/schemas";
+import type { PublicSettings } from "@/lib/content/settings";
 
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
@@ -58,6 +63,10 @@ export async function POST(request: Request) {
       { error: `Amount must be between ${minAmount} and ${maxAmount} MAD` },
       { status: 400 },
     );
+  }
+
+  if (!hasDatabase()) {
+    return handleWithoutDatabase(request, input, settings, ip);
   }
 
   const db = getAdminDb();
@@ -151,7 +160,11 @@ export async function POST(request: Request) {
       ],
       success_url: `${origin}/${input.locale}/donate/thanks?ref=${encodeURIComponent(reference)}&campaign=${encodeURIComponent(input.campaignSlug)}&method=card`,
       cancel_url: `${origin}/${input.locale}/donate/${input.campaignSlug}`,
-      metadata: { pledgeId: pledgeRef.id, reference },
+      metadata: {
+        pledgeId: pledgeRef.id,
+        reference,
+        campaignSlug: input.campaignSlug,
+      },
     });
     await pledgeRef.update({
       paymentProvider: "stripe",
@@ -162,7 +175,7 @@ export async function POST(request: Request) {
       await sendEmail({
         to: input.email,
         subject: confirmationSubject[input.locale] ?? confirmationSubject.fr,
-        html: `<p>${reference}</p><p>Test-mode card payment — no real money is charged.</p>`,
+        html: `<p>${reference}</p><p>Paiement par carte via notre prestataire de paiement sécurisé.</p>`,
       });
     }
 
@@ -173,9 +186,102 @@ export async function POST(request: Request) {
     await sendEmail({
       to: input.email,
       subject: confirmationSubject[input.locale] ?? confirmationSubject.fr,
-      html: `<p>${reference}</p><p>${settings.bank.bankName} — ${settings.bank.holder}</p><p>RIB: ${settings.bank.rib}</p>`,
+      html: settings.bank
+        ? `<p>${reference}</p><p>${settings.bank.bankName} — ${settings.bank.holder}</p><p>RIB: ${settings.bank.rib}</p>`
+        : `<p>${reference}</p>`,
     });
   }
 
   return NextResponse.json({ reference });
+}
+
+/**
+ * No-database mode (src/lib/firebase/mode.ts): nothing is stored.
+ * - Card: a Stripe Checkout Session carrying the campaign in its metadata;
+ *   Stripe is the record, and campaign totals are read back from Stripe.
+ * - Bank transfer / in-kind: the donor is shown the RIB (from env) and asked
+ *   to contact JLM; if email is configured the board is also notified.
+ */
+async function handleWithoutDatabase(
+  request: Request,
+  input: PledgeInput,
+  settings: PublicSettings,
+  ip: string,
+) {
+  const campaign = await getCampaign(input.campaignSlug);
+  if (!campaign) {
+    return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+  }
+  if (campaign.endsAt.getTime() < Date.now()) {
+    return NextResponse.json(
+      { error: "This campaign has ended" },
+      { status: 409 },
+    );
+  }
+  if (input.paymentMethod === "card" && !isCardPaymentsEnabled()) {
+    return NextResponse.json(
+      { error: "Card payment is not configured" },
+      { status: 400 },
+    );
+  }
+  const verified = await verifyTurnstile(input.turnstileToken, ip);
+  if (!verified) {
+    return NextResponse.json({ error: "Verification failed" }, { status: 403 });
+  }
+
+  // Short human-readable code; card payments are reconciled by Stripe's own
+  // session id, so this reference only helps the donor quote their gift.
+  const reference = await generatePledgeReference(async () => false);
+
+  if (input.paymentMethod === "card") {
+    const origin = new URL(request.url).origin;
+    const currency = (process.env.STRIPE_CURRENCY ?? "mad").toLowerCase();
+    const metadata = { reference, campaignSlug: input.campaignSlug };
+    const session = await getStripeClient().checkout.sessions.create(
+      {
+        mode: "payment",
+        allowed_payment_method_types: ["card"],
+        customer_email: input.email,
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency,
+              unit_amount: Math.round(input.amountMAD * 100),
+              product_data: { name: `JLM ENSAM — ${reference}` },
+            },
+          },
+        ],
+        success_url: `${origin}/${input.locale}/donate/thanks?ref=${encodeURIComponent(reference)}&campaign=${encodeURIComponent(input.campaignSlug)}&method=card`,
+        cancel_url: `${origin}/${input.locale}/donate/${input.campaignSlug}`,
+        metadata,
+        payment_intent_data: { metadata },
+      },
+      // A double-submitted form returns the same session instead of two.
+      { idempotencyKey: input.idempotencyKey },
+    );
+    return NextResponse.json({ reference, checkoutUrl: session.url });
+  }
+
+  const boardEmail = process.env.BOARD_NOTIFICATION_EMAIL;
+  if (boardEmail && isEmailConfigured()) {
+    const who = input.anonymous ? "(anonyme)" : (input.donorName ?? "-");
+    await sendEmail({
+      to: boardEmail,
+      subject: `[Promesse de don — ${input.campaignSlug}] ${input.kind === "in-kind" ? "en nature" : `${input.amountMAD} MAD`}`,
+      html: `<p>${escapeHtml(who)} — ${escapeHtml(input.email ?? "-")} — ${escapeHtml(input.phone ?? "-")}</p><p>${escapeHtml(input.inKindDescription ?? "")}</p><p>${escapeHtml(input.message ?? "")}</p>`,
+    });
+  }
+  return NextResponse.json({
+    method: input.kind === "in-kind" ? "in-kind" : "bank",
+    bankAvailable: Boolean(settings.bank),
+  });
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

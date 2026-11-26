@@ -7,8 +7,13 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     include: ["tests/unit/**/*.test.ts", "tests/unit/**/*.test.tsx"],
-    // Requires the Firestore emulator; run separately with `pnpm test:rules`.
-    exclude: ["node_modules/**", "tests/unit/firestore.rules.test.ts"],
+    // The rules suite needs the Firestore emulator. `pnpm test:rules` runs it
+    // under `firebase emulators:exec`, which sets FIRESTORE_EMULATOR_HOST;
+    // a plain `pnpm test` without an emulator skips it. (Excluding it
+    // unconditionally meant `pnpm test:rules` found no test files at all.)
+    exclude: process.env.FIRESTORE_EMULATOR_HOST
+      ? ["node_modules/**"]
+      : ["node_modules/**", "tests/unit/firestore.rules.test.ts"],
     globals: true,
   },
   resolve: {

@@ -64,7 +64,8 @@ export async function createProject(
 
   await db.collection("projects").doc(fields.slug).set(parsed.data);
   revalidatePath("/admin/projects");
-  revalidatePath("/[locale]/projects", "layout");
+  // Projects also appear on Home, pôle pages and Impact.
+  revalidatePath("/[locale]", "layout");
   redirect("/admin/projects");
 }
 
@@ -94,7 +95,8 @@ export async function updateProject(
 
   await db.collection("projects").doc(slug).set(parsed.data);
   revalidatePath("/admin/projects");
-  revalidatePath("/[locale]/projects", "layout");
+  // Projects also appear on Home, pôle pages and Impact.
+  revalidatePath("/[locale]", "layout");
   redirect("/admin/projects");
 }
 
@@ -105,12 +107,14 @@ export async function setProjectPublished(slug: string, published: boolean) {
     .doc(slug)
     .update({ published, updatedBy: session.uid, updatedAt: new Date() });
   revalidatePath("/admin/projects");
-  revalidatePath("/[locale]/projects", "layout");
+  // Projects also appear on Home, pôle pages and Impact.
+  revalidatePath("/[locale]", "layout");
 }
 
 export async function deleteProject(slug: string) {
   await requireEditorOrAdmin();
   await getAdminDb().collection("projects").doc(slug).delete();
   revalidatePath("/admin/projects");
-  revalidatePath("/[locale]/projects", "layout");
+  // Projects also appear on Home, pôle pages and Impact.
+  revalidatePath("/[locale]", "layout");
 }

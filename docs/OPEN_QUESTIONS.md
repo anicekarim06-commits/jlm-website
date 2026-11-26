@@ -9,6 +9,7 @@ Carried over from `JLM_WEBSITE_EXECUTION_PLAN.md` Section 14, plus the Phase 3 c
    - If the board wants real (not test-mode) online card payments eventually: Stripe does not pay out to Moroccan bank accounts, so this needs a CMI merchant contract with a Moroccan bank, or a PayPal Business account — neither is a free/instant signup, both need board decisions and paperwork.
 3. **Bank details to display (holder, bank, RIB, IBAN) and the confirmation email address for pledges.** Blocking for `settings/bank` in Firestore and for T3.5's real-world correctness (risk #2, hard checkpoint 14 Nov in the day-by-day plan — **not met**, no treasurer contact happened). `donationsEnabled` is seeded `false` until this is answered.
 4. Brand: official logo files, colors, fonts, year(s) of the national champion title. `src/styles/tokens.css` uses a placeholder neutral palette, marked `TODO(board): brand colors`.
+   - **Partly answered 2026-11-26:** the JLM logo and the 9 project logos were taken from JLM's annual-report site and are now used on the site. Still open: master/vector logo files, brand colours (the site still uses a placeholder palette, and the logo uses green `#BFD66A`, red `#F4475A`, yellow `#F5B945`), fonts, champion title year.
 5. Official social accounts and contact channels (WhatsApp number, email, phone).
 6. Domain name and registrant.
 7. Consent process for photos of children, patients, entrepreneurs — signed forms already exist?
@@ -33,6 +34,15 @@ Automated check of the 9 external platform/shop URLs in `content/seed/platforms.
 - The other 7 URLs (Marche Verte, Discover Morocco quiz, heritage site, Waraqa, Golden Wishes tree, Recycle It, the Abdelhaq flowers shop) all returned HTTP 200.
 
 Re-run before the 20 and 24 Nov checkpoints per the day-by-day plan.
+
+**Re-run 2026-11-26 (risk #12, due today):** unchanged. 7/9 return HTTP 200. GODEM fails the TLS handshake (consistent with the expired certificate above), and Get a Plet still returns 404. For the Gate 3 demo, click Waraqa or Marche Verte rather than GODEM, and use IQRAA or SmartED as the example project page (see `docs/GATE3_PACK.md` Section 7).
+
+## Added 2026-11-26
+
+- **Caravan map (Impact page, master plan Section 7.7).** Not built: no static map image or list of caravan locations has been supplied, and the seed content only names Al Haouz and douar Tizi. Who can provide the locations, or an approved map image?
+- **Arabic and English interface strings added for News, ID card, Impact and SEO metadata** are drafts written during the build and need the same native review as the rest (#10, risk #8).
+- **All seed content (149 localized fields: projects, pôles, stats, platforms, flagship actions, campaigns) is French only.** AR and EN pages show it with the "Traduction en cours" note. Translating it is content work for the content lead and reviewers, not development.
+- **Campaign goals.** All 4 seeded campaigns are unpublished with `goalMAD: 1` as a placeholder (the master plan says the board sets the amounts). The J1 demo needs at least one published campaign with a real goal on staging.
 
 ## TODO(board) markers in the codebase
 

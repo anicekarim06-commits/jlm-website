@@ -1,13 +1,15 @@
 import "server-only";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { getStripeClient } from "@/lib/payments/stripe";
+import { getStripeClient, isCardPaymentsEnabled } from "@/lib/payments/stripe";
 import { reconcileCheckoutSession } from "@/lib/payments/reconcile";
+import { revalidatePath } from "next/cache";
+import { hasDatabase } from "@/lib/firebase/mode";
 
 export async function POST(request: Request) {
   const signature = request.headers.get("stripe-signature");
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!signature || !webhookSecret || !process.env.STRIPE_SECRET_KEY) {
+  if (!signature || !webhookSecret || !isCardPaymentsEnabled()) {
     return NextResponse.json(
       { error: "Webhook not configured" },
       { status: 400 },
@@ -27,9 +29,15 @@ export async function POST(request: Request) {
   }
 
   if (event.type === "checkout.session.completed") {
-    await reconcileCheckoutSession(
-      event.data.object as Stripe.Checkout.Session,
-    );
+    if (hasDatabase()) {
+      await reconcileCheckoutSession(
+        event.data.object as Stripe.Checkout.Session,
+      );
+    } else {
+      // No-database mode: Stripe is the record; just refresh campaign pages
+      // so the progress bar (read from Stripe) updates right away.
+      revalidatePath("/[locale]/donate", "layout");
+    }
   }
 
   return NextResponse.json({ received: true });

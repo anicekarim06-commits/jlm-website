@@ -1,22 +1,17 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { settingsSchema, type Settings } from "@/lib/validation/schemas";
+import { hasDatabase } from "@/lib/firebase/mode";
+import {
+  settingsFromEnv,
+  type PublicSettings,
+} from "@/lib/content/env-settings";
 
-export type PublicSettings = {
-  contact: { email: string; phone?: string; whatsapp?: string };
-  social: Record<string, string | undefined>;
-  bank: {
-    holder: string;
-    bankName: string;
-    rib: string;
-    iban?: string;
-    swift?: string;
-  };
-  donationsEnabled: boolean;
-  joinOpen: boolean;
-};
+export type { PublicSettings } from "@/lib/content/env-settings";
 
 export async function getPublicSettings(): Promise<PublicSettings | null> {
+  // No-database mode: contact and bank details come from the environment.
+  if (!hasDatabase()) return settingsFromEnv(process.env);
   try {
     const snapshot = await getAdminDb()
       .collection("settingsPublic")

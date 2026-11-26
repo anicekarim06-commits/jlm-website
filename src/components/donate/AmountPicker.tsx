@@ -23,7 +23,7 @@ export function AmountPicker({
           className={cn(
             "min-h-11 rounded-md border px-4 font-medium",
             value === preset
-              ? "border-primary bg-primary/10 text-primary"
+              ? "border-primary bg-primary text-primary-contrast"
               : "border-black/10",
           )}
         >

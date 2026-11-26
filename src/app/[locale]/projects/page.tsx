@@ -1,13 +1,20 @@
-import { getTranslations } from "next-intl/server";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getProjects } from "@/lib/content/projects";
 import { getPoles } from "@/lib/content/poles";
 import { resolveLocalized, type AppLocale } from "@/lib/content/locale";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { Link } from "@/lib/i18n/navigation";
+import { ProjectLogo } from "@/components/sections/ProjectLogo";
+import { staticPageMetadata } from "@/lib/seo/static-metadata";
 
-export const metadata: Metadata = { title: "Projects" };
+export function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  return staticPageMetadata(params, "projects", "/projects");
+}
 
 export default async function ProjectsPage({
   params,
@@ -17,6 +24,7 @@ export default async function ProjectsPage({
   searchParams: Promise<{ pole?: string }>;
 }) {
   const { locale: localeParam } = await params;
+  setRequestLocale(localeParam);
   const locale = localeParam as AppLocale;
   const { pole: poleFilter } = await searchParams;
   const t = await getTranslations("projects");
@@ -33,7 +41,7 @@ export default async function ProjectsPage({
       <nav aria-label={t("title")} className="mt-6 flex flex-wrap gap-2">
         <Link
           href="/projects"
-          className={`rounded-full border px-3 py-1 text-sm ${!poleFilter ? "border-primary bg-primary/10 text-primary" : "border-black/10"}`}
+          className={`rounded-full border px-3 py-1 text-sm ${!poleFilter ? "border-primary bg-primary text-primary-contrast" : "border-black/10"}`}
         >
           {t("filterAll")}
         </Link>
@@ -43,7 +51,7 @@ export default async function ProjectsPage({
             <Link
               key={pole.slug}
               href={`/projects?pole=${pole.slug}`}
-              className={`rounded-full border px-3 py-1 text-sm ${poleFilter === pole.slug ? "border-primary bg-primary/10 text-primary" : "border-black/10"}`}
+              className={`rounded-full border px-3 py-1 text-sm ${poleFilter === pole.slug ? "border-primary bg-primary text-primary-contrast" : "border-black/10"}`}
             >
               {name.text}
             </Link>
@@ -61,7 +69,10 @@ export default async function ProjectsPage({
             return (
               <Link key={project.slug} href={`/projects/${project.slug}`}>
                 <Card className="h-full transition-shadow hover:shadow-md">
-                  <h2 className="font-semibold">{name.text}</h2>
+                  <div className="flex items-center gap-3">
+                    <ProjectLogo src={project.logo} />
+                    <h2 className="font-semibold">{name.text}</h2>
+                  </div>
                   <p className="text-muted mt-1 text-sm">{tagline.text}</p>
                   {project.stats.slice(0, 2).map((stat) => (
                     <p key={stat.key} className="text-muted mt-2 text-xs">

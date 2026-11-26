@@ -24,7 +24,7 @@ export async function Hero() {
     <section className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24">
       <Container className="grid items-center gap-14 lg:grid-cols-[1.05fr_1fr]">
         <div className="flex flex-col items-start gap-6">
-          <span className="bg-tint-violet text-primary rounded-full px-4 py-1.5 text-sm font-medium">
+          <span className="bg-tint-violet text-text rounded-full px-4 py-1.5 text-sm font-medium">
             {common("motto")}
           </span>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl">

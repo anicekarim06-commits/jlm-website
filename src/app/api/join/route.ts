@@ -4,7 +4,8 @@ import { getAdminDb } from "@/lib/firebase/admin";
 import { joinFormSchema } from "@/lib/validation/schemas";
 import { verifyTurnstile } from "@/lib/security/turnstile";
 import { isRateLimited, clientIpFrom } from "@/lib/security/rate-limit";
-import { sendEmail } from "@/lib/email/send";
+import { isEmailConfigured, sendEmail } from "@/lib/email/send";
+import { hasDatabase } from "@/lib/firebase/mode";
 import { getPublicSettings } from "@/lib/content/settings";
 
 export async function POST(request: Request) {
@@ -40,17 +41,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Verification failed" }, { status: 403 });
   }
 
-  await getAdminDb().collection("joinRequests").add({
-    name: input.name,
-    school: input.school,
-    year: input.year,
-    poleInterest: input.poleInterest,
-    motivation: input.motivation,
-    phone: input.phone,
-    email: input.email,
-    locale: input.locale,
-    createdAt: new Date(),
-  });
+  // No-database mode: nothing is stored, so the message must be emailed.
+  if (
+    !hasDatabase() &&
+    !(isEmailConfigured() && process.env.BOARD_NOTIFICATION_EMAIL)
+  ) {
+    return NextResponse.json({ error: "Form unavailable" }, { status: 503 });
+  }
+  if (hasDatabase()) {
+    await getAdminDb().collection("joinRequests").add({
+      name: input.name,
+      school: input.school,
+      year: input.year,
+      poleInterest: input.poleInterest,
+      motivation: input.motivation,
+      phone: input.phone,
+      email: input.email,
+      locale: input.locale,
+      createdAt: new Date(),
+    });
+  }
 
   const boardEmail = process.env.BOARD_NOTIFICATION_EMAIL;
   if (boardEmail) {

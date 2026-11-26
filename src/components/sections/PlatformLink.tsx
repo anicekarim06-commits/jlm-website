@@ -4,23 +4,23 @@ import { resolveLocalized, type AppLocale } from "@/lib/content/locale";
 import { StatusBadge } from "@/components/ui/Badge";
 import { trackEvent } from "@/lib/analytics/track";
 import type { Platform } from "@/lib/validation/schemas";
-import { useTranslations } from "next-intl";
 
-const statusLabelKey: Record<Platform["status"], string> = {
-  live: "statusLive",
-  beta: "statusBeta",
-  "in-development": "statusInDevelopment",
-  prototype: "statusPrototype",
+/** Translated on the server (see platform-link-labels.ts), so this client
+ *  component does not ship next-intl's message formatter. */
+export type PlatformLinkLabels = {
+  open: string;
+  status: Record<Platform["status"], string>;
 };
 
 export function PlatformLink({
   platform,
   locale,
+  labels,
 }: {
   platform: Platform;
   locale: AppLocale;
+  labels: PlatformLinkLabels;
 }) {
-  const t = useTranslations("platforms");
   const name = resolveLocalized(platform.name, locale);
   const description = resolveLocalized(platform.description, locale);
 
@@ -32,7 +32,7 @@ export function PlatformLink({
       </div>
       <div className="flex items-center gap-2">
         <StatusBadge tone={platform.status}>
-          {t(statusLabelKey[platform.status])}
+          {labels.status[platform.status]}
         </StatusBadge>
         {platform.url && (
           <a
@@ -44,7 +44,7 @@ export function PlatformLink({
             }
             className="min-h-11 rounded-md border border-black/10 px-3 py-2 text-sm font-medium hover:bg-black/5"
           >
-            {t("openPlatform")}
+            {labels.open}
           </a>
         )}
       </div>

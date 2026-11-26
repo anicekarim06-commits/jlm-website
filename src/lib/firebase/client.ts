@@ -2,7 +2,7 @@
 
 import { getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getFirestore, type Firestore } from "firebase/firestore";
-import { getAuth, type Auth } from "firebase/auth";
+import { connectAuthEmulator, getAuth, type Auth } from "firebase/auth";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -38,7 +38,18 @@ export function getClientDb(): Firestore {
 
 let authInstance: Auth | undefined;
 export function getClientAuth(): Auth {
-  if (!authInstance) authInstance = getAuth(getFirebaseApp());
+  if (!authInstance) {
+    authInstance = getAuth(getFirebaseApp());
+    // Local development only: sign in against the Auth emulator
+    // (`pnpm emulators`) instead of a real project. Never set in
+    // staging/production, so behaviour there is unchanged.
+    const emulatorHost = process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST;
+    if (emulatorHost) {
+      connectAuthEmulator(authInstance, `http://${emulatorHost}`, {
+        disableWarnings: true,
+      });
+    }
+  }
   return authInstance;
 }
 

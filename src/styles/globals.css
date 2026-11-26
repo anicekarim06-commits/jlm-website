@@ -89,3 +89,35 @@ html[dir="rtl"] h6 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Loading screen (src/app/[locale]/loading.tsx). Only applied through
+   Tailwind's motion-safe: variant, so nothing moves under
+   prefers-reduced-motion. inset-inline-start keeps the bar moving in the
+   reading direction (right to left in Arabic). */
+@keyframes jlm-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+}
+
+@keyframes jlm-loading-bar {
+  0% {
+    inset-inline-start: -33%;
+  }
+  100% {
+    inset-inline-start: 100%;
+  }
+}
+
+/* French fallback text on Arabic pages (FallbackNote.tsx): keep its own
+   left-to-right word order but align it with the RTL page. On a dir="ltr"
+   element, `end` means the right edge. */
+[dir="rtl"] [data-fallback] {
+  text-align: end;
+}

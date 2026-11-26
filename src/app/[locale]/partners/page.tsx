@@ -1,11 +1,17 @@
-import { getTranslations } from "next-intl/server";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPartners } from "@/lib/content/partners";
 import { Container } from "@/components/ui/Container";
 import { LinkButton } from "@/components/ui/Button";
 import type { Partner } from "@/lib/validation/schemas";
+import { staticPageMetadata } from "@/lib/seo/static-metadata";
 
-export const metadata: Metadata = { title: "Partners" };
+export function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  return staticPageMetadata(params, "partners", "/partners");
+}
 
 const tierTitleKey: Record<Partner["tier"], string> = {
   institutional: "institutional",
@@ -13,7 +19,12 @@ const tierTitleKey: Record<Partner["tier"], string> = {
   supplier: "suppliers",
 };
 
-export default async function PartnersPage() {
+export default async function PartnersPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  setRequestLocale((await params).locale);
   const t = await getTranslations("partners");
   const partners = await getPartners();
 

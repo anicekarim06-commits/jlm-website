@@ -64,8 +64,9 @@ service cloud.firestore {
     match /campaigns/{campaignSlug} {
       allow read: if resource.data.published == true;
       allow read: if isEditor();
-      allow create, update: if isEditor();
-      allow delete: if isAdmin();
+      // Admin only (master plan 5.1). An editor must not be able to change
+      // goalMAD/receivedMAD and so fake a donation progress bar.
+      allow write: if isAdmin();
     }
 
     match /partners/{partnerId} {

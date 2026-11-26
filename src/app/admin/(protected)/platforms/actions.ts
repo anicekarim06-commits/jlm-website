@@ -53,7 +53,8 @@ export async function createPlatform(
 
   await db.collection("platforms").doc(fields.id).set(parsed.data);
   revalidatePath("/admin/platforms");
-  revalidatePath("/[locale]/platforms", "layout");
+  // Platforms also appear on project pages.
+  revalidatePath("/[locale]", "layout");
   redirect("/admin/platforms");
 }
 
@@ -78,7 +79,8 @@ export async function updatePlatform(
 
   await db.collection("platforms").doc(id).set(parsed.data);
   revalidatePath("/admin/platforms");
-  revalidatePath("/[locale]/platforms", "layout");
+  // Platforms also appear on project pages.
+  revalidatePath("/[locale]", "layout");
   redirect("/admin/platforms");
 }
 
@@ -89,12 +91,14 @@ export async function setPlatformPublished(id: string, published: boolean) {
     .doc(id)
     .update({ published, updatedBy: session.uid, updatedAt: new Date() });
   revalidatePath("/admin/platforms");
-  revalidatePath("/[locale]/platforms", "layout");
+  // Platforms also appear on project pages.
+  revalidatePath("/[locale]", "layout");
 }
 
 export async function deletePlatform(id: string) {
   await requireEditorOrAdmin();
   await getAdminDb().collection("platforms").doc(id).delete();
   revalidatePath("/admin/platforms");
-  revalidatePath("/[locale]/platforms", "layout");
+  // Platforms also appear on project pages.
+  revalidatePath("/[locale]", "layout");
 }

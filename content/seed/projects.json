@@ -7,7 +7,7 @@
     "description": {
       "fr": "Caravane scientifique, ateliers numériques, contenus pédagogiques et équipement offerts aux écoles rurales."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/smarted.webp",
     "gallery": [],
     "stats": [
       {
@@ -82,7 +82,7 @@
     "description": {
       "fr": "De l'information de masse au conseil individuel : stands, consulting privé, suivi WhatsApp et une plateforme d'orientation ouverte jour et nuit."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/godem.webp",
     "gallery": [],
     "stats": [
       {
@@ -141,7 +141,7 @@
     "description": {
       "fr": "Lecture, soutien scolaire, une bibliothèque au douar Tizi, deux prototypes d'ingénierie (Eden AI et MIPAD)."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/iqraa.webp",
     "gallery": [],
     "stats": [
       {
@@ -195,7 +195,7 @@
     "description": {
       "fr": "Réalisation de souhaits d'enfants en service d'oncologie et un arbre à souhaits numérique. Les histoires et images de patients sont traitées avec des règles de consentement strictes."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/golden-wishes.webp",
     "gallery": [],
     "stats": [
       {
@@ -228,7 +228,7 @@
     "description": {
       "fr": "Formation de la nouvelle génération dès le lycée."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/jlm-junior.webp",
     "gallery": [],
     "stats": [
       {
@@ -264,7 +264,7 @@
     "description": {
       "fr": "Nettoyages de plages et d'écoles, ateliers de jardinage, un agent IA qui réduit l'empreinte carbone des serveurs en supprimant les données inutiles."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/greenovators.webp",
     "gallery": [],
     "stats": [
       {
@@ -308,7 +308,7 @@
     "description": {
       "fr": "Ateliers avec des enfants et une plateforme intelligente proposant des idées de réemploi."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/recycle-it.webp",
     "gallery": [],
     "stats": [
       { "key": "children", "value": 180, "label": { "fr": "enfants" } },
@@ -346,7 +346,7 @@
     "description": {
       "fr": "Nourrir les animaux errants, sensibiliser au bien-être animal, un « refuge numérique » en développement (adoption, boutique, panneau d'affichage)."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/get-a-plet.webp",
     "gallery": [],
     "stats": [
       {
@@ -367,7 +367,7 @@
     "description": {
       "fr": "Trois entrepreneurs accompagnés. Kawtar : de 500 à 2200 DH par mois en 3 ans, pic de Ramadan à 7300 DH, activité transmise à sa fille Salma, accompagnement clos. Abdelhak : fleuriste digitalisé, +26% de chiffre d'affaires en 3 mois, fournisseur officiel JLM, 500 fleurs offertes pour la Journée de la femme. Brahim : artisan de mobilier en carton, accompagnement démarré cette année. Prénoms seuls, avec consentement."
     },
-    "logo": "TODO(board): logo file",
+    "logo": "/images/projects/handmade-blkhir.webp",
     "gallery": [],
     "stats": [
       {

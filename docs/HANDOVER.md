@@ -2,6 +2,20 @@
 
 Updated at every gate and whenever the PM role rotates (risk #13). Read this before picking up the project.
 
+## 2026-11-26: remaining Gate 3 modules built, Gate 3 pack assembled
+
+**Start with `docs/GATE3_PACK.md`.** It has module status, test numbers, content status, the risk review and the ordered demo-prep list for 27 Nov.
+
+**Built on branch `feat/gate3-remaining-modules` (not merged):** News and ads with RSS per locale (T3.4); digital ID card `/id`, `/id/print` (A6) and `/api/vcard` (J5); Impact page with reduced-motion-safe counters (T3.8); per-page translated metadata, hreflang, sitemap, robots and JSON-LD (T3.9); a visible "Traduction en cours" note on project, pôle and news pages (T3.7). The ComingSoon placeholders are gone. Admin post writes now revalidate the public News pages directly.
+
+**Bugs fixed on the way:** the Contact page rendered `TODO(board): …` settings verbatim (`isConfigured()` in `src/lib/id-card/contact.ts` now guards every contact value); 4 WCAG AA failures (contrast + label-in-name); and in Arabic on phones, the header site name wrapped to three lines and overflowed.
+
+**Verified:** typecheck, lint, 32 unit tests, and 62 Playwright tests (FR+AR, desktop+mobile, axe), all against a local production build **with no Firebase data**. **Not verified:** anything with real data, the rules emulator suite (needs Java 21+), Lighthouse, WebKit, and the manual passes.
+
+**Environment notes for the next person:** pnpm is not on PATH on this machine, so use `corepack pnpm …`. The `corepack` shim on Windows breaks on paths containing `(protected)`; call `node node_modules/prettier/bin/prettier.cjs` directly for those. `.env.example` now exists (it was referenced before but never committed), including the new `SITE_NOINDEX` flag for staging.
+
+**Biggest gap found:** there is no CI at all (`.github/workflows/` does not exist), so nothing runs on pull requests. Make this the first Phase 4 task.
+
 ## 2026-11-19 — foundation + Phase 3 build started (this session)
 
 **What exists:** repo scaffolded from scratch (Next.js 16 App Router, TypeScript, Tailwind v4, `next-intl`, Firebase client + Admin SDK, zod). See `docs/DECISIONS.md` for why — the repo was empty when this session started despite the plan assuming Gate 2 was passed.

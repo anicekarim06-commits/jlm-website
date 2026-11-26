@@ -1,5 +1,5 @@
-import { getTranslations } from "next-intl/server";
-import type { Metadata } from "next";
+import Image from "next/image";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPlatforms } from "@/lib/content/platforms";
 import { getProjects } from "@/lib/content/projects";
 import { resolveLocalized, type AppLocale } from "@/lib/content/locale";
@@ -7,9 +7,18 @@ import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { Link } from "@/lib/i18n/navigation";
 import { PlatformLink } from "@/components/sections/PlatformLink";
+import { getPlatformLinkLabels } from "@/components/sections/platform-link-labels";
+import { isImageSrc } from "@/lib/content/image-src";
 import type { Platform } from "@/lib/validation/schemas";
+import { staticPageMetadata } from "@/lib/seo/static-metadata";
 
-export const metadata: Metadata = { title: "Platforms" };
+export function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  return staticPageMetadata(params, "platforms", "/platforms");
+}
 
 const KINDS: Exclude<Platform["kind"], "prototype">[] = [
   "platform",
@@ -32,6 +41,8 @@ export default async function PlatformsHubPage({
   searchParams: Promise<{ type?: string }>;
 }) {
   const { locale: localeParam } = await params;
+  setRequestLocale(localeParam);
+  const platformLabels = await getPlatformLinkLabels();
   const locale = localeParam as AppLocale;
   const { type } = await searchParams;
   const t = await getTranslations("platforms");
@@ -60,7 +71,7 @@ export default async function PlatformsHubPage({
       <nav aria-label={t("title")} className="mt-6 flex flex-wrap gap-2">
         <Link
           href="/platforms"
-          className={`rounded-full border px-3 py-1 text-sm ${!type ? "border-primary bg-primary/10 text-primary" : "border-black/10"}`}
+          className={`rounded-full border px-3 py-1 text-sm ${!type ? "border-primary bg-primary text-primary-contrast" : "border-black/10"}`}
         >
           {t("filterAll")}
         </Link>
@@ -68,7 +79,7 @@ export default async function PlatformsHubPage({
           <Link
             key={kind}
             href={`/platforms?type=${kind}`}
-            className={`rounded-full border px-3 py-1 text-sm ${type === kind ? "border-primary bg-primary/10 text-primary" : "border-black/10"}`}
+            className={`rounded-full border px-3 py-1 text-sm ${type === kind ? "border-primary bg-primary text-primary-contrast" : "border-black/10"}`}
           >
             {t(kindFilterKey[kind])}
           </Link>
@@ -87,7 +98,11 @@ export default async function PlatformsHubPage({
               <div className="flex flex-col gap-2">
                 {items.map((platform) => (
                   <Card key={platform.id}>
-                    <PlatformLink platform={platform} locale={locale} />
+                    <PlatformLink
+                      platform={platform}
+                      locale={locale}
+                      labels={platformLabels}
+                    />
                   </Card>
                 ))}
               </div>
@@ -101,8 +116,22 @@ export default async function PlatformsHubPage({
           <h2 className="mb-3 text-2xl">{t("prototypesTitle")}</h2>
           <div className="flex flex-col gap-2">
             {prototypes.map((platform) => (
-              <Card key={platform.id}>
-                <PlatformLink platform={platform} locale={locale} />
+              <Card key={platform.id} className="flex flex-col gap-4">
+                {isImageSrc(platform.screenshot) && (
+                  <Image
+                    src={platform.screenshot}
+                    alt={resolveLocalized(platform.name, locale).text}
+                    width={640}
+                    height={400}
+                    sizes="(min-width: 768px) 640px, 100vw"
+                    className="aspect-[16/10] w-full max-w-xl rounded-2xl object-cover"
+                  />
+                )}
+                <PlatformLink
+                  platform={platform}
+                  locale={locale}
+                  labels={platformLabels}
+                />
               </Card>
             ))}
           </div>

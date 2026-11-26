@@ -112,6 +112,7 @@
   },
   {
     "id": "eden-ai-2",
+    "screenshot": "/images/prototypes/eden-ai-2.webp",
     "name": { "fr": "Eden AI 2.0" },
     "description": {
       "fr": "Dispositif discret clipsé sur un vêtement qui transforme la parole en texte pour une personne malentendante, et les signes en voix pour une personne qui ne les comprend pas. La version 2.0 ajoute des bagues capteurs portées aux doigts. En test en conditions réelles, a remporté plusieurs compétitions."
@@ -125,6 +126,7 @@
   },
   {
     "id": "mipad",
+    "screenshot": "/images/prototypes/mipad.webp",
     "name": { "fr": "MIPAD" },
     "description": {
       "fr": "Une souris contrôlée à la langue, un plateau dentaire avec un petit pavé de commande, pour les personnes qui ne peuvent pas utiliser leurs mains. Prototype fonctionnel ; l'équipe travaille sur une version plus discrète et confortable."

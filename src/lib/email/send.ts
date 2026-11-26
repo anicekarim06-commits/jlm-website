@@ -1,6 +1,16 @@
 import "server-only";
 import nodemailer from "nodemailer";
 
+/** True when real SMTP delivery is configured (otherwise emails are only logged). */
+export function isEmailConfigured(): boolean {
+  return Boolean(
+    process.env.SMTP_HOST &&
+    process.env.SMTP_PORT &&
+    process.env.SMTP_USER &&
+    process.env.SMTP_PASSWORD,
+  );
+}
+
 let transporter: ReturnType<typeof nodemailer.createTransport> | undefined;
 
 function getTransporter() {

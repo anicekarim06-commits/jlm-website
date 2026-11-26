@@ -1,5 +1,6 @@
 import "server-only";
 import type Stripe from "stripe";
+import { revalidatePath } from "next/cache";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { recomputeCampaignTotal } from "@/lib/pledges/recompute-campaign-total";
 
@@ -32,5 +33,8 @@ export async function reconcileCheckoutSession(
     updatedAt: new Date(),
   });
   await recomputeCampaignTotal(pledgeDoc.data()!.campaignSlug);
+  // Campaign pages are cached (ISR): refresh them so the progress bar
+  // reflects the payment immediately.
+  revalidatePath("/[locale]/donate", "layout");
   return true;
 }

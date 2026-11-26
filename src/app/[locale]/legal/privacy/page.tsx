@@ -1,10 +1,21 @@
-import { getTranslations } from "next-intl/server";
-import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
+import { staticPageMetadata } from "@/lib/seo/static-metadata";
 
-export const metadata: Metadata = { title: "Privacy policy" };
+export function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  return staticPageMetadata(params, "legalPrivacy", "/legal/privacy");
+}
 
-export default async function PrivacyPage() {
+export default async function PrivacyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  setRequestLocale((await params).locale);
   const t = await getTranslations("legal");
 
   return (

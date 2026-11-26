@@ -1,13 +1,13 @@
 /**
  * Firestore security rules emulator tests (register risk #6: rules must be
  * tested before the admin panel is connected to real data). Requires the
- * Firestore emulator — run with `pnpm emulators` in one terminal and this
- * suite with `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 pnpm test` in another,
- * or let CI's `firebase emulators:exec` wrap it (see .github/workflows/ci.yml).
+ * Firestore emulator (Java 21+): `pnpm test:rules` starts it and runs this
+ * suite. There is no CI workflow yet (docs/BACKLOG.md).
  *
- * NOTE for whoever picks this up: this session had no Java runtime available
- * to run the emulator, so this suite is written and wired into CI but has
- * NOT been executed locally. Run it before trusting it. See docs/HANDOVER.md.
+ * The emulator port comes from FIRESTORE_EMULATOR_HOST, which
+ * `firebase emulators:exec` sets; the fallback matches firebase.json (8081,
+ * since 8080 is taken by another local service, docs/DECISIONS.md). The
+ * old hard-coded 8080 meant this suite never reached the emulator.
  */
 import { afterAll, beforeAll, beforeEach, describe, it } from "vitest";
 import {
@@ -21,13 +21,18 @@ import { setDoc, doc, getDoc, deleteDoc } from "firebase/firestore";
 
 let testEnv: RulesTestEnvironment;
 
+const [emulatorHost, emulatorPort] = (
+  process.env.FIRESTORE_EMULATOR_HOST ?? "127.0.0.1:8081"
+).split(":");
+
 beforeAll(async () => {
   testEnv = await initializeTestEnvironment({
-    projectId: "jlm-rules-test",
+    // `demo-` project ids never reach a real Firebase project.
+    projectId: "demo-jlm-rules-test",
     firestore: {
       rules: readFileSync("firestore.rules", "utf8"),
-      host: "127.0.0.1",
-      port: 8080,
+      host: emulatorHost,
+      port: Number(emulatorPort),
     },
   });
 });
